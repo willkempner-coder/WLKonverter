@@ -238,6 +238,28 @@ body {
   background: rgba(255, 248, 232, 0.14);
 }
 
+.support-link-convert {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0.65rem 0.95rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--convert-bright), var(--convert));
+  color: var(--button-text);
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 2px 0 rgba(1, 109, 23, 0.42);
+}
+
+.support-link-convert:hover {
+  background: linear-gradient(180deg, #12d936, #02b928);
+  color: var(--button-text);
+  filter: brightness(0.96);
+}
+
 .convert-button {
   border: 0;
   border-radius: 12px;

@@ -26,7 +26,7 @@ window.WLK_MONETAG = {
     },
   },
   slots: {
-    inline: "#monetag-inline-ad",
+    inline: "#page-ad-slot",
     sticky: "#monetag-sticky-ad",
   },
   overlay: {

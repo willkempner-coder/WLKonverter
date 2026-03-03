@@ -35,27 +35,23 @@
 
   function slotHasVisibleAd(slot) {
     if (!slot) return false;
-    return Boolean(slot.querySelector("iframe, img, video, canvas, object, embed, a[href]"));
+    if (slot.querySelector("iframe, img, video, canvas, object, embed, a[href], [onclick]")) return true;
+    return slot.childNodes.length > 0 || slot.textContent.trim().length > 0;
   }
 
   function bindPageAd() {
-    const source = document.querySelector("#monetag-inline-ad");
     const strip = document.querySelector("#ad-strip");
     const shell = document.querySelector("#page-ad-shell");
     const slot = document.querySelector("#page-ad-slot");
-    if (!source || !strip || !shell || !slot) return;
+    if (!strip || !shell || !slot) return;
 
     const sync = () => {
-      while (source.firstChild) {
-        slot.appendChild(source.firstChild);
-      }
       const hasFill = slotHasVisibleAd(slot);
       shell.classList.toggle("has-fill", hasFill);
       strip.classList.toggle("has-fill", hasFill);
     };
 
     const observer = new MutationObserver(sync);
-    observer.observe(source, { childList: true, subtree: true, characterData: true });
     observer.observe(slot, { childList: true, subtree: true, characterData: true });
     sync();
   }
@@ -69,7 +65,7 @@
   }
 
   loadScript(monetagScripts.sticky, document.querySelector("#monetag-sticky-ad"));
-  loadScript(monetagScripts.inline, document.querySelector("#monetag-inline-ad"));
+  loadScript(monetagScripts.inline, document.querySelector("#page-ad-slot"));
   bindPageAd();
   bindConverterLinks();
 })();

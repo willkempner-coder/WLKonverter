@@ -31,7 +31,6 @@
     adStrip: document.querySelector("#ad-strip"),
     pageAdShell: document.querySelector("#page-ad-shell"),
     pageAdSlot: document.querySelector("#page-ad-slot"),
-    monetagInlineAd: document.querySelector("#monetag-inline-ad"),
   };
 
   const monetagState = {
@@ -86,11 +85,8 @@
 
   function slotHasLikelyVisibleAd(slot) {
     if (!slot) return false;
-    const mediaNode = slot.querySelector("iframe, img, video, canvas, object, embed");
-    if (mediaNode) return true;
-    const clickNode = slot.querySelector("a[href], [onclick]");
-    if (clickNode && slot.textContent.trim().length > 0) return true;
-    return false;
+    if (slot.querySelector("iframe, img, video, canvas, object, embed, a[href], [onclick]")) return true;
+    return slot.childNodes.length > 0 || slot.textContent.trim().length > 0;
   }
 
   function updateInlineAdVisibility() {
@@ -104,15 +100,7 @@
     if (!els.pageAdSlot) return;
     updateInlineAdVisibility();
     const observer = new MutationObserver(() => {
-      if (els.monetagInlineAd && els.pageAdSlot && els.monetagInlineAd.firstChild && !els.pageAdSlot.firstChild) {
-        els.pageAdSlot.appendChild(els.monetagInlineAd.firstChild);
-      }
       updateInlineAdVisibility();
-    });
-    observer.observe(els.monetagInlineAd, {
-      childList: true,
-      subtree: true,
-      characterData: true,
     });
     observer.observe(els.pageAdSlot, {
       childList: true,
@@ -168,15 +156,8 @@
     monetagState.inlineTimer = window.setTimeout(() => {
       const slot = monetagSlotElement("inline");
       loadExternalScript(monetagConfig.scripts && monetagConfig.scripts.inline, slot || document.body);
+      updateInlineAdVisibility();
     }, Number(inlineConfig.showAfterSuccessMs) || 1800);
-  }
-
-  function moveInlineAdIntoPageSlot() {
-    if (!els.monetagInlineAd || !els.pageAdSlot) return;
-    while (els.monetagInlineAd.firstChild) {
-      els.pageAdSlot.appendChild(els.monetagInlineAd.firstChild);
-    }
-    updateInlineAdVisibility();
   }
 
   function preparePageAd() {
@@ -184,7 +165,6 @@
     window.setTimeout(() => {
       const slot = monetagSlotElement("inline");
       loadExternalScript(monetagConfig.scripts && monetagConfig.scripts.inline, slot || document.body);
-      moveInlineAdIntoPageSlot();
       updateInlineAdVisibility();
     }, Number(inlineConfig.showAfterSuccessMs) || 1800);
   }
