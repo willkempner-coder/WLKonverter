@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>XML2LIVE</title>
+    <title>Convert .xml to .als!</title>
     <meta
       name="description"
       content="Convert Premiere Pro, Final Cut Pro, and DaVinci Resolve XML timelines into Ableton Live Set files for sound design, post-production, and mixing in Ableton."
@@ -13,7 +13,7 @@
       content="xml to ableton, xml to als, premiere xml to ableton, final cut pro xml to ableton, davinci resolve xml to ableton, sound mix in ableton, ableton post production"
     />
     <meta name="robots" content="index, follow, max-image-preview:large" />
-    <meta property="og:title" content="XML2LIVE" />
+    <meta property="og:title" content="Convert .xml to .als!" />
     <meta name="build-tag" content="wlkonverter-live-20260303-0102" />
     <meta
       property="og:description"
@@ -55,24 +55,22 @@
             <input id="project-name" type="text" placeholder="XML2LIVE set name" />
           </section>
 
-          <div class="toggle-grid">
-            <section class="field-block compact-field">
-              <label for="ableton-version">Ableton version</label>
-              <p>Choose which Live set format XML2LIVE should target.</p>
-              <select id="ableton-version">
-                <option value="11" selected>Ableton Live 11</option>
-                <option value="9">Ableton Live 9</option>
-              </select>
-            </section>
+          <section class="field-block compact-field">
+            <label for="ableton-version">Ableton version</label>
+            <p>Choose which Live set format XML2LIVE should target.</p>
+            <select id="ableton-version">
+              <option value="11" selected>Ableton Live 11</option>
+              <option value="9">Ableton Live 9</option>
+            </select>
+          </section>
 
-            <section class="field-block compact-field">
-              <label class="checkbox-row" for="import-metadata">
-                <input id="import-metadata" type="checkbox" />
-                <span>Import markers, fades, mute?</span>
-              </label>
-              <p>Best-effort import of sequence markers, fade timing, and enabled or muted states.</p>
-            </section>
-          </div>
+          <section class="field-block compact-field metadata-field">
+            <label class="checkbox-row" for="import-metadata">
+              <input id="import-metadata" type="checkbox" />
+              <span>Import markers, fades, mute?</span>
+            </label>
+            <p>Best-effort import of sequence markers, fade timing, and enabled or muted states.</p>
+          </section>
 
           <p id="status" class="web-status" hidden></p>
 
@@ -192,7 +190,10 @@
         </div>
       </section>
 
-      <div class="credit">© 2026 WLKonverter. XML conversion tool built by Will Kempner. XML support by Xavier, Will &amp; Lars.</div>
+      <div class="credit">
+        © 2026 WLKonverter. For XML - Xavier, Myself &amp; Lars.
+        <a class="footer-link" href="./privacy.html">Privacy Policy</a>
+      </div>
     </div>
 
     <div id="progress-overlay" class="progress-overlay" aria-hidden="true">

@@ -220,12 +220,12 @@
   function armConvertAfterAd() {
     state.awaitingAdNavigation = true;
     state.convertPrimedAt = Date.now();
+    showToast("Return to this tab and click CONVERT again");
   }
 
   function finalizeAdNavigation() {
     if (!state.awaitingAdNavigation) return;
     state.awaitingAdNavigation = false;
-    showToast("Return to this tab and click CONVERT again");
   }
 
   function canRunPrimedConvert() {
@@ -368,12 +368,7 @@
     if (!canRunPrimedConvert()) {
       triggerMonetagOnClick();
       armConvertAfterAd();
-      await new Promise((resolve) => window.setTimeout(resolve, 1200));
-      if (document.visibilityState !== "visible") {
-        finalizeAdNavigation();
-        return;
-      }
-      clearPrimedConvert();
+      return;
     } else {
       clearPrimedConvert();
     }
