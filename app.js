@@ -1,5 +1,6 @@
 (function () {
   const API_ENDPOINT = (window.XML2LIVE_API_URL || "https://xml2live-api-vercel.vercel.app/api/xml2live").trim();
+  const API_TOKEN = (window.XML2LIVE_API_TOKEN || "").trim();
   const XML_MIME_PATTERN = /(text\/xml|application\/xml|\.xml$)/i;
   const monetagConfig = window.WLK_MONETAG || {};
 
@@ -29,8 +30,6 @@
     toast: document.querySelector("#toast"),
     adStrip: document.querySelector("#ad-strip"),
     monetagInlineAd: document.querySelector("#monetag-inline-ad"),
-    monetagOverlay: document.querySelector("#monetag-overlay"),
-    monetagOverlayClose: document.querySelector("#monetag-overlay-close"),
   };
 
   const monetagState = {
@@ -133,21 +132,12 @@
     window.dispatchEvent(new CustomEvent("wlk:convert-click"));
   }
 
-  function closeMonetagOverlay() {
-    if (!els.monetagOverlay) return;
-    els.monetagOverlay.classList.remove("visible");
-    els.monetagOverlay.setAttribute("aria-hidden", "true");
-  }
-
   function maybeShowMonetagOverlay() {
     const overlayConfig = monetagConfig.overlay || {};
-    if (!monetagConfig.enabled || !overlayConfig.enabled || !els.monetagOverlay) return;
+    if (!monetagConfig.enabled || !overlayConfig.enabled) return;
     if (monetagState.overlayTimer) window.clearTimeout(monetagState.overlayTimer);
     monetagState.overlayTimer = window.setTimeout(() => {
-      const slot = monetagSlotElement("overlay");
-      loadExternalScript(monetagConfig.scripts && monetagConfig.scripts.overlay, slot || document.body);
-      els.monetagOverlay.classList.add("visible");
-      els.monetagOverlay.setAttribute("aria-hidden", "false");
+      loadExternalScript(monetagConfig.scripts && monetagConfig.scripts.overlay, document.body);
     }, Number(overlayConfig.showAfterSuccessMs) || 1200);
   }
 
@@ -302,9 +292,13 @@
   }
 
   async function postToBackend(payload) {
+    const headers = { "Content-Type": "application/json" };
+    if (API_TOKEN) {
+      headers["X-XML2LIVE-Token"] = API_TOKEN;
+    }
     const response = await fetch(API_ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       body: JSON.stringify(payload),
     });
 
@@ -414,10 +408,6 @@
     if (file) await loadXmlFile(file);
   });
   els.convert.addEventListener("click", convert);
-  els.monetagOverlayClose?.addEventListener("click", closeMonetagOverlay);
-  els.monetagOverlay?.addEventListener("click", (event) => {
-    if (event.target === els.monetagOverlay) closeMonetagOverlay();
-  });
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState !== "visible") {
       finalizeAdNavigation();

@@ -1,4 +1,5 @@
 window.XML2LIVE_API_URL = "https://xml2live-api-vercel.vercel.app/api/xml2live";
+window.XML2LIVE_API_TOKEN = "";
 window.WLK_MONETAG = {
   enabled: true,
   serviceWorker: {
@@ -27,7 +28,6 @@ window.WLK_MONETAG = {
   slots: {
     inline: "#monetag-inline-ad",
     sticky: "#monetag-sticky-ad",
-    overlay: "#monetag-overlay-ad",
   },
   overlay: {
     enabled: true,
