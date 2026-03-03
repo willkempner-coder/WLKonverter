@@ -66,21 +66,6 @@ body {
   align-content: start;
 }
 
-
-
-.poster-frame:hover {
-  transform: translateY(-1px);
-}
-
-
-
-.reference-zone.drag-over .poster-overlay {
-  background: linear-gradient(180deg, rgba(10, 30, 20, 0.32), rgba(18, 48, 29, 0.92));
-  box-shadow: inset 0 0 0 2px rgba(18, 227, 56, 0.62);
-}
-
-
-
 .content {
   display: flex;
   flex-direction: column;
@@ -258,6 +243,67 @@ body {
   color: rgba(245, 241, 231, 0.8);
 }
 
+.seo-copy {
+  padding: 0 2.15rem 1.6rem;
+}
+
+.seo-inner {
+  max-width: 920px;
+  margin-left: clamp(88px, 11vw, 212px);
+  padding: 1.4rem 1.6rem 1.5rem;
+  border-top: 1px solid rgba(245, 241, 231, 0.12);
+  color: rgba(245, 241, 231, 0.92);
+}
+
+.seo-inner h2,
+.seo-inner h3,
+.seo-inner h4 {
+  margin: 0;
+  color: var(--text);
+}
+
+.seo-inner h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.9rem;
+}
+
+.seo-inner h3 {
+  font-size: 1.08rem;
+  font-weight: 700;
+  margin-top: 1.2rem;
+  margin-bottom: 0.45rem;
+}
+
+.seo-inner h4 {
+  font-size: 0.98rem;
+  font-weight: 700;
+  margin-top: 0.95rem;
+  margin-bottom: 0.28rem;
+}
+
+.seo-inner p,
+.seo-inner li {
+  color: rgba(245, 241, 231, 0.84);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.seo-inner p {
+  margin: 0 0 0.72rem;
+}
+
+.seo-inner ul {
+  margin: 0.15rem 0 0.9rem 1.2rem;
+  padding: 0;
+}
+
+.seo-inner li + li {
+  margin-top: 0.18rem;
+}
+
 .progress-overlay {
   position: fixed;
   inset: 0;
@@ -361,6 +407,15 @@ body {
 
   .convert-button {
     width: 100%;
+  }
+
+  .seo-copy {
+    padding: 0 1rem 1.2rem;
+  }
+
+  .seo-inner {
+    margin-left: 0;
+    padding: 1.2rem 0 0;
   }
 }
 
