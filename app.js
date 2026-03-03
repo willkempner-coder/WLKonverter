@@ -209,7 +209,6 @@
   function armConvertAfterAd() {
     state.awaitingAdNavigation = true;
     state.convertPrimedAt = Date.now();
-    showToast("Return to this tab and click CONVERT again");
   }
 
   function finalizeAdNavigation() {
