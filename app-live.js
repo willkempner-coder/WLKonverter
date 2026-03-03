@@ -27,8 +27,9 @@
     progressOverlay: document.querySelector("#progress-overlay"),
     progressTitle: document.querySelector("#progress-title"),
     progressMessage: document.querySelector("#progress-message"),
+    progressAdShell: document.querySelector("#progress-ad-shell"),
+    progressAdSlot: document.querySelector("#progress-ad-slot"),
     toast: document.querySelector("#toast"),
-    adStrip: document.querySelector("#ad-strip"),
     monetagInlineAd: document.querySelector("#monetag-inline-ad"),
   };
 
@@ -82,19 +83,35 @@
     return selector ? document.querySelector(selector) : null;
   }
 
+  function slotHasLikelyVisibleAd(slot) {
+    if (!slot) return false;
+    const mediaNode = slot.querySelector("iframe, img, video, canvas, object, embed");
+    if (mediaNode) return true;
+    const clickNode = slot.querySelector("a[href], [onclick]");
+    if (clickNode && slot.textContent.trim().length > 0) return true;
+    return false;
+  }
+
   function updateInlineAdVisibility() {
-    if (!els.adStrip || !els.monetagInlineAd) return;
-    const hasFill = els.monetagInlineAd.childElementCount > 0 || els.monetagInlineAd.textContent.trim().length > 0;
-    els.adStrip.classList.toggle("has-fill", hasFill);
+    if (!els.progressAdShell || !els.progressAdSlot) return;
+    els.progressAdShell.classList.toggle("has-fill", slotHasLikelyVisibleAd(els.progressAdSlot));
   }
 
   function watchInlineAdFill() {
-    if (!els.monetagInlineAd) return;
+    if (!els.progressAdSlot) return;
     updateInlineAdVisibility();
     const observer = new MutationObserver(() => {
+      if (els.monetagInlineAd && els.progressAdSlot && els.monetagInlineAd.firstChild && !els.progressAdSlot.firstChild) {
+        els.progressAdSlot.appendChild(els.monetagInlineAd.firstChild);
+      }
       updateInlineAdVisibility();
     });
     observer.observe(els.monetagInlineAd, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+    observer.observe(els.progressAdSlot, {
       childList: true,
       subtree: true,
       characterData: true,
@@ -148,6 +165,30 @@
     monetagState.inlineTimer = window.setTimeout(() => {
       const slot = monetagSlotElement("inline");
       loadExternalScript(monetagConfig.scripts && monetagConfig.scripts.inline, slot || document.body);
+    }, Number(inlineConfig.showAfterSuccessMs) || 1800);
+  }
+
+  function maybeLoadInlineAdDuringProgress() {
+    const inlineConfig = monetagConfig.inline || {};
+    if (!monetagConfig.enabled || inlineConfig.loadAfterSuccess) return;
+    const slot = monetagSlotElement("inline");
+    loadExternalScript(monetagConfig.scripts && monetagConfig.scripts.inline, slot || document.body);
+  }
+
+  function moveInlineAdIntoProgress() {
+    if (!els.monetagInlineAd || !els.progressAdSlot) return;
+    while (els.monetagInlineAd.firstChild) {
+      els.progressAdSlot.appendChild(els.monetagInlineAd.firstChild);
+    }
+    updateInlineAdVisibility();
+  }
+
+  function prepareProgressAd() {
+    const inlineConfig = monetagConfig.inline || {};
+    maybeLoadInlineAdDuringProgress();
+    window.setTimeout(() => {
+      moveInlineAdIntoProgress();
+      updateInlineAdVisibility();
     }, Number(inlineConfig.showAfterSuccessMs) || 1800);
   }
 
@@ -356,6 +397,7 @@
 
     setBusy(true);
     setProgress(true, "Preparing conversion...", "XML2LIVE is packaging the browser request.");
+    prepareProgressAd();
     await waitForUiPaint();
 
     try {

@@ -34,7 +34,7 @@ window.WLK_MONETAG = {
     showAfterSuccessMs: 900,
   },
   inline: {
-    loadAfterSuccess: true,
-    showAfterSuccessMs: 1800,
+    loadAfterSuccess: false,
+    showAfterSuccessMs: 400,
   },
 };
