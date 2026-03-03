@@ -56,7 +56,8 @@
 
   function loadExternalScript(spec, target) {
     const scriptSpec = normalizeScriptSpec(spec);
-    if (!scriptSpec || monetagState.loadedScripts.has(scriptSpec.src)) return;
+    const scriptKey = scriptSpec ? `${scriptSpec.src}|${scriptSpec.zone || ""}` : "";
+    if (!scriptSpec || monetagState.loadedScripts.has(scriptKey)) return;
     const parent = target || document.head || document.body;
     if (!parent) return;
     const script = document.createElement("script");
@@ -64,10 +65,13 @@
     if (scriptSpec.zone) {
       script.dataset.zone = String(scriptSpec.zone);
     }
+    if (scriptSpec.cfasync != null) {
+      script.dataset.cfasync = String(scriptSpec.cfasync);
+    }
     script.async = true;
     script.crossOrigin = "anonymous";
     parent.appendChild(script);
-    monetagState.loadedScripts.add(scriptSpec.src);
+    monetagState.loadedScripts.add(scriptKey);
   }
 
   function monetagSlotElement(slotName) {

@@ -2,7 +2,7 @@ window.XML2LIVE_API_URL = "https://xml2live-api-vercel.vercel.app/api/xml2live";
 window.WLK_MONETAG = {
   enabled: true,
   serviceWorker: {
-    enabled: false,
+    enabled: true,
     path: "./sw.js",
   },
   scripts: {
@@ -11,10 +11,14 @@ window.WLK_MONETAG = {
       zone: "10676099",
     },
     inline: {
-      src: "https://nap5k.com/tag.min.js",
-      zone: "10676107",
+      src: "https://quge5.com/88/tag.min.js",
+      zone: "215987",
+      cfasync: "false",
     },
-    sticky: "",
+    sticky: {
+      src: "https://nap5k.com/tag.min.js",
+      zone: "10676129",
+    },
     overlay: {
       src: "https://gizokraijaw.net/vignette.min.js",
       zone: "10676108",
