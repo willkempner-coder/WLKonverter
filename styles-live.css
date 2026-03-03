@@ -213,10 +213,32 @@ body {
   padding-top: 0.1rem;
 }
 
+.action-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 1.6rem;
+  padding-top: 0.3rem;
+}
+
+.metadata-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.action-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  min-width: 280px;
+}
+
 .convert-row {
   display: flex;
   justify-content: flex-end;
-  padding-top: 0.6rem;
+  padding-top: 0;
 }
 
 .support-row {
@@ -225,7 +247,7 @@ body {
   align-items: center;
   gap: 0.9rem;
   flex-wrap: wrap;
-  padding-top: 0.35rem;
+  padding-top: 0;
 }
 
 .support-link {
@@ -531,6 +553,16 @@ body {
 
   .convert-button {
     width: 100%;
+  }
+
+  .action-grid {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .action-stack {
+    align-items: stretch;
+    min-width: 0;
   }
 
   .support-row {

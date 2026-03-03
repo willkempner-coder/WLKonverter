@@ -72,44 +72,50 @@
             </select>
           </section>
 
-          <section class="field-block compact-field metadata-field">
-            <label class="checkbox-row" for="import-volume-and-crossfades">
-              <input id="import-volume-and-crossfades" type="checkbox" />
-              <span>Volume Automations and Crossfades</span>
-            </label>
-            <p>Best-effort import of track and clip volume, volume automation, fades, and crossfades.</p>
-          </section>
+          <div class="action-grid">
+            <div class="metadata-stack">
+              <section class="field-block compact-field metadata-field">
+                <label class="checkbox-row" for="import-volume-and-crossfades">
+                  <input id="import-volume-and-crossfades" type="checkbox" />
+                  <span>Volume Automations and Crossfades</span>
+                </label>
+                <p>Best-effort import of track and clip volume, volume automation, fades, and crossfades.</p>
+              </section>
 
-          <section class="field-block compact-field metadata-field">
-            <label class="checkbox-row" for="import-sequence-markers">
-              <input id="import-sequence-markers" type="checkbox" />
-              <span>Sequence Markers</span>
-            </label>
-            <p>Import sequence markers into Ableton Live locators.</p>
-          </section>
+              <section class="field-block compact-field metadata-field">
+                <label class="checkbox-row" for="import-sequence-markers">
+                  <input id="import-sequence-markers" type="checkbox" />
+                  <span>Sequence Markers</span>
+                </label>
+                <p>Import sequence markers into Ableton Live locators.</p>
+              </section>
+            </div>
 
-          <p id="status" class="web-status" hidden></p>
+            <div class="action-stack">
+              <p id="status" class="web-status" hidden></p>
 
-          <div class="convert-row">
-            <button id="convert" class="convert-button" type="button">CONVERT</button>
-          </div>
-          <div class="support-row" aria-label="Support and feedback">
-            <a
-              class="support-link support-link-donate"
-              href="https://www.paypal.com/donate/?business=A5RXTTW6EL74G&no_recurring=0&currency_code=USD"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Donate
-            </a>
-            <a
-              class="support-link"
-              href="https://docs.google.com/forms/d/e/1FAIpQLSftfXoKjWCb46hIpAfCLRnMeWih5g5C_TUrLjnm3QxG3H_U3A/viewform?usp=publish-editor"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Send Notes or Issues
-            </a>
+              <div class="convert-row">
+                <button id="convert" class="convert-button" type="button">CONVERT</button>
+              </div>
+              <div class="support-row" aria-label="Support and feedback">
+                <a
+                  class="support-link support-link-donate"
+                  href="https://www.paypal.com/donate/?business=A5RXTTW6EL74G&no_recurring=0&currency_code=USD"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Donate
+                </a>
+                <a
+                  class="support-link"
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSftfXoKjWCb46hIpAfCLRnMeWih5g5C_TUrLjnm3QxG3H_U3A/viewform?usp=publish-editor"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Send Notes or Issues
+                </a>
+              </div>
+            </div>
           </div>
         </section>
       </main>
