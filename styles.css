@@ -258,6 +258,37 @@ body {
   color: rgba(245, 241, 231, 0.8);
 }
 
+.ad-strip {
+  padding: 0 2.15rem 1rem;
+}
+
+.ad-strip-inner {
+  max-width: 920px;
+  margin-left: clamp(88px, 11vw, 212px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.ad-slot {
+  min-height: 92px;
+  border: 1px dashed rgba(245, 241, 231, 0.2);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
+    rgba(34, 47, 61, 0.44);
+}
+
+.ad-slot:empty::before {
+  content: "Sponsored";
+  display: block;
+  padding: 0.85rem 1rem;
+  color: rgba(245, 241, 231, 0.42);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .progress-overlay {
   position: fixed;
   inset: 0;
@@ -340,6 +371,44 @@ body {
   transform: translate(-50%, 0);
 }
 
+.monetag-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(10, 16, 24, 0.78);
+  z-index: 50;
+}
+
+.monetag-overlay.visible {
+  display: grid;
+}
+
+.monetag-overlay-card {
+  width: min(92vw, 760px);
+  padding: 1.25rem;
+  border-radius: 20px;
+  background: rgba(36, 49, 63, 0.98);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.42);
+}
+
+.monetag-overlay-close {
+  display: inline-flex;
+  margin-left: auto;
+  margin-bottom: 0.9rem;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.55rem 0.9rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.ad-slot-overlay {
+  min-height: 280px;
+}
+
 @media (max-width: 900px) {
   .panel,
   .panel-no-poster {
@@ -361,6 +430,15 @@ body {
 
   .convert-button {
     width: 100%;
+  }
+
+  .ad-strip {
+    padding: 0 1rem 1rem;
+  }
+
+  .ad-strip-inner {
+    margin-left: 0;
+    grid-template-columns: 1fr;
   }
 }
 

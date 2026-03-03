@@ -1,6 +1,7 @@
 (function () {
   const API_ENDPOINT = (window.XML2LIVE_API_URL || "https://xml2live-api-vercel.vercel.app/api/xml2live").trim();
   const XML_MIME_PATTERN = /(text\/xml|application\/xml|\.xml$)/i;
+  const monetagConfig = window.WLK_MONETAG || {};
 
   const state = {
     xmlFile: null,
@@ -24,6 +25,13 @@
     progressTitle: document.querySelector("#progress-title"),
     progressMessage: document.querySelector("#progress-message"),
     toast: document.querySelector("#toast"),
+    monetagOverlay: document.querySelector("#monetag-overlay"),
+    monetagOverlayClose: document.querySelector("#monetag-overlay-close"),
+  };
+
+  const monetagState = {
+    loadedScripts: new Set(),
+    overlayTimer: null,
   };
 
   function basenameOf(name) {
@@ -36,6 +44,78 @@
 
   function setStatus(message) {
     els.status.textContent = message;
+  }
+
+  function normalizeScriptSpec(spec) {
+    if (!spec) return null;
+    if (typeof spec === "string") return { src: spec };
+    if (typeof spec === "object" && spec.src) return spec;
+    return null;
+  }
+
+  function loadExternalScript(spec, target) {
+    const scriptSpec = normalizeScriptSpec(spec);
+    if (!scriptSpec || monetagState.loadedScripts.has(scriptSpec.src)) return;
+    const parent = target || document.head || document.body;
+    if (!parent) return;
+    const script = document.createElement("script");
+    script.src = scriptSpec.src;
+    if (scriptSpec.zone) {
+      script.dataset.zone = String(scriptSpec.zone);
+    }
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    parent.appendChild(script);
+    monetagState.loadedScripts.add(scriptSpec.src);
+  }
+
+  function monetagSlotElement(slotName) {
+    const selector = monetagConfig.slots && monetagConfig.slots[slotName];
+    return selector ? document.querySelector(selector) : null;
+  }
+
+  function registerMonetagServiceWorker() {
+    const workerConfig = monetagConfig.serviceWorker || {};
+    if (!monetagConfig.enabled || !workerConfig.enabled) return;
+    if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
+    navigator.serviceWorker.register(workerConfig.path || "./sw.js").catch((error) => {
+      console.warn("Monetag service worker registration failed", error);
+    });
+  }
+
+  function primeMonetagPlacements() {
+    if (!monetagConfig.enabled) return;
+    const scripts = monetagConfig.scripts || {};
+    ["inline", "sticky"].forEach((slotName) => {
+      const slot = monetagSlotElement(slotName);
+      if (!slot) return;
+      loadExternalScript(scripts[slotName], slot);
+    });
+  }
+
+  function triggerMonetagOnClick() {
+    if (!monetagConfig.enabled) return;
+    const onClickUrl = monetagConfig.scripts && monetagConfig.scripts.onClick;
+    loadExternalScript(onClickUrl, document.body);
+    window.dispatchEvent(new CustomEvent("wlk:convert-click"));
+  }
+
+  function closeMonetagOverlay() {
+    if (!els.monetagOverlay) return;
+    els.monetagOverlay.classList.remove("visible");
+    els.monetagOverlay.setAttribute("aria-hidden", "true");
+  }
+
+  function maybeShowMonetagOverlay() {
+    const overlayConfig = monetagConfig.overlay || {};
+    if (!monetagConfig.enabled || !overlayConfig.enabled || !els.monetagOverlay) return;
+    if (monetagState.overlayTimer) window.clearTimeout(monetagState.overlayTimer);
+    monetagState.overlayTimer = window.setTimeout(() => {
+      const slot = monetagSlotElement("overlay");
+      loadExternalScript(monetagConfig.scripts && monetagConfig.scripts.overlay, slot || document.body);
+      els.monetagOverlay.classList.add("visible");
+      els.monetagOverlay.setAttribute("aria-hidden", "false");
+    }, Number(overlayConfig.showAfterSuccessMs) || 1200);
   }
 
   function setBusy(isBusy) {
@@ -204,6 +284,7 @@
     };
 
     setBusy(true);
+    triggerMonetagOnClick();
     setProgress(true, "Preparing conversion...", "XML2LIVE is packaging the browser request.");
     await waitForUiPaint();
 
@@ -212,6 +293,7 @@
         const mode = await postToBackend(payload);
         setStatus(`Backend conversion finished. Downloaded ${mode === "zip" ? "zip" : "response payload"}.`);
         showToast("Conversion complete");
+        maybeShowMonetagOverlay();
       } catch (error) {
         downloadBlob(
           `${projectName.replace(/[\\/:*?"<>|]/g, "_") || "XML2LIVE Set"} - web payload.json`,
@@ -255,5 +337,11 @@
     if (file) await loadXmlFile(file);
   });
   els.convert.addEventListener("click", convert);
+  els.monetagOverlayClose?.addEventListener("click", closeMonetagOverlay);
+  els.monetagOverlay?.addEventListener("click", (event) => {
+    if (event.target === els.monetagOverlay) closeMonetagOverlay();
+  });
+  registerMonetagServiceWorker();
+  primeMonetagPlacements();
   attachDropEvents();
 })();
