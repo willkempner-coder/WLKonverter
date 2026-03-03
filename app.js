@@ -10,6 +10,7 @@
     xmlSummary: null,
     convertPrimedAt: 0,
     awaitingAdNavigation: false,
+    projectNameTouched: false,
   };
 
   const els = {
@@ -18,10 +19,12 @@
     sequenceMeta: document.querySelector("#sequence-meta"),
     xmlPath: document.querySelector("#xml-path"),
     dropZone: document.querySelector("#drop-zone"),
+    clearXml: document.querySelector("#clear-xml"),
     xmlInput: document.querySelector("#xml-input"),
     projectName: document.querySelector("#project-name"),
     abletonVersion: document.querySelector("#ableton-version"),
-    importMetadata: document.querySelector("#import-metadata"),
+    importVolumeAndCrossfades: document.querySelector("#import-volume-and-crossfades"),
+    importSequenceMarkers: document.querySelector("#import-sequence-markers"),
     status: document.querySelector("#status"),
     convert: document.querySelector("#convert"),
     progressOverlay: document.querySelector("#progress-overlay"),
@@ -49,6 +52,10 @@
 
   function setStatus(message) {
     els.status.textContent = message;
+  }
+
+  function setXmlLoadedState(isLoaded) {
+    els.clearXml.hidden = !isLoaded;
   }
 
   function normalizeScriptSpec(spec) {
@@ -172,7 +179,9 @@
   function setBusy(isBusy) {
     els.convert.disabled = isBusy;
     els.dropZone.disabled = isBusy;
-    els.importMetadata.disabled = isBusy;
+    els.clearXml.disabled = isBusy;
+    els.importVolumeAndCrossfades.disabled = isBusy;
+    els.importSequenceMarkers.disabled = isBusy;
     els.abletonVersion.disabled = isBusy;
     els.convert.textContent = isBusy ? "PREPARING..." : "CONVERT";
   }
@@ -265,13 +274,36 @@
   }
 
   function updateSequence(summary) {
+    const previousSequenceName = state.xmlSummary && state.xmlSummary.sequenceName;
+    const currentProjectName = els.projectName.value.trim();
+    const shouldSyncProjectName =
+      !state.projectNameTouched ||
+      !currentProjectName ||
+      currentProjectName === previousSequenceName;
+
     els.sequenceName.textContent = summary.sequenceName;
     els.sequenceYear.textContent = summary.year ? `(${summary.year})` : "";
     els.sequenceMeta.textContent = `${summary.audioTrackCount} audio tracks`;
     els.xmlPath.textContent = summary.sequenceName;
-    if (!els.projectName.value.trim()) {
+    setXmlLoadedState(true);
+    if (shouldSyncProjectName) {
       els.projectName.value = summary.sequenceName || "XML2LIVE Set";
+      state.projectNameTouched = false;
     }
+  }
+
+  function clearLoadedXml() {
+    state.xmlFile = null;
+    state.xmlText = "";
+    state.xmlSummary = null;
+    state.projectNameTouched = false;
+    els.sequenceName.textContent = "No XML selected";
+    els.sequenceYear.textContent = "";
+    els.sequenceMeta.textContent = "Premiere, Final Cut Pro, and DaVinci Resolve XML to Ableton Live Set";
+    els.xmlPath.textContent = "Drop or Upload an XML";
+    els.projectName.value = "";
+    els.xmlInput.value = "";
+    setXmlLoadedState(false);
   }
 
   async function loadXmlFile(file) {
@@ -359,7 +391,8 @@
       createdAt: new Date().toISOString(),
       projectName,
       abletonVersion: els.abletonVersion.value,
-      importMetadata: els.importMetadata.checked,
+      importVolumeAndCrossfades: els.importVolumeAndCrossfades.checked,
+      importSequenceMarkers: els.importSequenceMarkers.checked,
       xml: {
         fileName: state.xmlFile.name,
         summary: state.xmlSummary,
@@ -420,6 +453,10 @@
     const file = els.xmlInput.files && els.xmlInput.files[0];
     if (file) await loadXmlFile(file);
   });
+  els.clearXml.addEventListener("click", clearLoadedXml);
+  els.projectName.addEventListener("input", () => {
+    state.projectNameTouched = true;
+  });
   els.convert.addEventListener("click", convert);
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState !== "visible") {
@@ -430,4 +467,5 @@
   registerMonetagServiceWorker();
   primeMonetagPlacements();
   attachDropEvents();
+  setXmlLoadedState(false);
 })();

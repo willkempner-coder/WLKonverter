@@ -141,6 +141,24 @@ body {
   transform: translateY(-1px);
 }
 
+.drop-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.clear-xml-button {
+  border: 0;
+  background: transparent;
+  color: rgba(245, 241, 231, 0.72);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0.1rem 0;
+}
+
+.clear-xml-button:hover {
+  color: var(--text);
+}
+
 .drop-zone.drag-over {
   border-color: var(--convert);
 }

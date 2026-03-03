@@ -52,6 +52,9 @@
               <h3 id="xml-path">Drop or Upload an XML</h3>
             </div>
           </button>
+          <div class="drop-actions">
+            <button id="clear-xml" class="clear-xml-button" type="button" hidden>Remove XML</button>
+          </div>
           <input id="xml-input" type="file" accept=".xml,text/xml,application/xml" hidden />
 
           <section class="field-block">
@@ -70,11 +73,19 @@
           </section>
 
           <section class="field-block compact-field metadata-field">
-            <label class="checkbox-row" for="import-metadata">
-              <input id="import-metadata" type="checkbox" />
-              <span>Import markers, fades, mute?</span>
+            <label class="checkbox-row" for="import-volume-and-crossfades">
+              <input id="import-volume-and-crossfades" type="checkbox" />
+              <span>Volume Automations and Crossfades</span>
             </label>
-            <p>Best-effort import of sequence markers, fade timing, and enabled or muted states.</p>
+            <p>Best-effort import of track and clip volume, volume automation, fades, and crossfades.</p>
+          </section>
+
+          <section class="field-block compact-field metadata-field">
+            <label class="checkbox-row" for="import-sequence-markers">
+              <input id="import-sequence-markers" type="checkbox" />
+              <span>Sequence Markers</span>
+            </label>
+            <p>Import sequence markers into Ableton Live locators.</p>
           </section>
 
           <p id="status" class="web-status" hidden></p>
@@ -142,7 +153,9 @@
             <li>Convert XML to Ableton Live Set (.als)</li>
             <li>Bring edit timelines into Ableton Live for sound design and post-production</li>
             <li>Support Premiere Pro, Final Cut Pro, and DaVinci Resolve XML workflows</li>
-            <li>Optionally import markers, fades, and muted or enabled clip states</li>
+            <li>Always carry track and clip enabled states into Ableton Live</li>
+            <li>Optionally import sequence markers</li>
+            <li>Optionally import volume automation, fades, and crossfades</li>
             <li>Generate a Live 9 or Live 11 compatible session structure</li>
           </ul>
 
