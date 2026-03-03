@@ -35,8 +35,11 @@
 
   function slotHasVisibleAd(slot) {
     if (!slot) return false;
-    if (slot.querySelector("iframe, img, video, canvas, object, embed, a[href], [onclick]")) return true;
-    return slot.childNodes.length > 0 || slot.textContent.trim().length > 0;
+    if (slot.querySelector("iframe, img, video, canvas, object, embed")) return true;
+    const visibleBlock = slot.querySelector("div, section, article, aside");
+    if (!visibleBlock) return false;
+    const text = slot.textContent.trim();
+    return text.length > 0;
   }
 
   function bindPageAd() {
