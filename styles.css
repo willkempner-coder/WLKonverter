@@ -260,6 +260,11 @@ body {
 
 .ad-strip {
   padding: 0 2.15rem 1rem;
+  display: none;
+}
+
+.ad-strip.has-fill {
+  display: block;
 }
 
 .ad-strip-inner {

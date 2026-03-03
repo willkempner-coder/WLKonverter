@@ -8,6 +8,7 @@
     xmlText: "",
     xmlSummary: null,
     convertPrimedAt: 0,
+    awaitingAdNavigation: false,
   };
 
   const els = {
@@ -26,6 +27,8 @@
     progressTitle: document.querySelector("#progress-title"),
     progressMessage: document.querySelector("#progress-message"),
     toast: document.querySelector("#toast"),
+    adStrip: document.querySelector("#ad-strip"),
+    monetagInlineAd: document.querySelector("#monetag-inline-ad"),
     monetagOverlay: document.querySelector("#monetag-overlay"),
     monetagOverlayClose: document.querySelector("#monetag-overlay-close"),
   };
@@ -33,6 +36,7 @@
   const monetagState = {
     loadedScripts: new Set(),
     overlayTimer: null,
+    inlineTimer: null,
   };
 
   function basenameOf(name) {
@@ -79,6 +83,25 @@
     return selector ? document.querySelector(selector) : null;
   }
 
+  function updateInlineAdVisibility() {
+    if (!els.adStrip || !els.monetagInlineAd) return;
+    const hasFill = els.monetagInlineAd.childElementCount > 0 || els.monetagInlineAd.textContent.trim().length > 0;
+    els.adStrip.classList.toggle("has-fill", hasFill);
+  }
+
+  function watchInlineAdFill() {
+    if (!els.monetagInlineAd) return;
+    updateInlineAdVisibility();
+    const observer = new MutationObserver(() => {
+      updateInlineAdVisibility();
+    });
+    observer.observe(els.monetagInlineAd, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+  }
+
   function registerMonetagServiceWorker() {
     const workerConfig = monetagConfig.serviceWorker || {};
     if (!monetagConfig.enabled || !workerConfig.enabled) return;
@@ -91,11 +114,16 @@
   function primeMonetagPlacements() {
     if (!monetagConfig.enabled) return;
     const scripts = monetagConfig.scripts || {};
-    ["inline", "sticky"].forEach((slotName) => {
+    const inlineConfig = monetagConfig.inline || {};
+    ["sticky"].forEach((slotName) => {
       const slot = monetagSlotElement(slotName);
       if (!slot) return;
       loadExternalScript(scripts[slotName], slot);
     });
+    if (!inlineConfig.loadAfterSuccess) {
+      const inlineSlot = monetagSlotElement("inline");
+      if (inlineSlot) loadExternalScript(scripts.inline, inlineSlot);
+    }
   }
 
   function triggerMonetagOnClick() {
@@ -121,6 +149,16 @@
       els.monetagOverlay.classList.add("visible");
       els.monetagOverlay.setAttribute("aria-hidden", "false");
     }, Number(overlayConfig.showAfterSuccessMs) || 1200);
+  }
+
+  function maybeLoadInlineAdAfterSuccess() {
+    const inlineConfig = monetagConfig.inline || {};
+    if (!monetagConfig.enabled || !inlineConfig.loadAfterSuccess) return;
+    if (monetagState.inlineTimer) window.clearTimeout(monetagState.inlineTimer);
+    monetagState.inlineTimer = window.setTimeout(() => {
+      const slot = monetagSlotElement("inline");
+      loadExternalScript(monetagConfig.scripts && monetagConfig.scripts.inline, slot || document.body);
+    }, Number(inlineConfig.showAfterSuccessMs) || 1800);
   }
 
   function setBusy(isBusy) {
@@ -152,7 +190,13 @@
   }
 
   function armConvertAfterAd() {
+    state.awaitingAdNavigation = true;
     state.convertPrimedAt = Date.now();
+  }
+
+  function finalizeAdNavigation() {
+    if (!state.awaitingAdNavigation) return;
+    state.awaitingAdNavigation = false;
     showToast("Return to this tab and click CONVERT again");
   }
 
@@ -163,6 +207,7 @@
 
   function clearPrimedConvert() {
     state.convertPrimedAt = 0;
+    state.awaitingAdNavigation = false;
   }
 
   function waitForUiPaint() {
@@ -291,10 +336,15 @@
     if (!canRunPrimedConvert()) {
       triggerMonetagOnClick();
       armConvertAfterAd();
-      return;
+      await new Promise((resolve) => window.setTimeout(resolve, 1200));
+      if (document.visibilityState !== "visible") {
+        finalizeAdNavigation();
+        return;
+      }
+      clearPrimedConvert();
+    } else {
+      clearPrimedConvert();
     }
-
-    clearPrimedConvert();
 
     const projectName = els.projectName.value.trim() || state.xmlSummary.sequenceName || "XML2LIVE Set";
     const payload = {
@@ -319,6 +369,7 @@
         const mode = await postToBackend(payload);
         setStatus(`Backend conversion finished. Downloaded ${mode === "zip" ? "zip" : "response payload"}.`);
         showToast("Conversion complete");
+        maybeLoadInlineAdAfterSuccess();
         maybeShowMonetagOverlay();
       } catch (error) {
         downloadBlob(
@@ -367,6 +418,12 @@
   els.monetagOverlay?.addEventListener("click", (event) => {
     if (event.target === els.monetagOverlay) closeMonetagOverlay();
   });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible") {
+      finalizeAdNavigation();
+    }
+  });
+  watchInlineAdFill();
   registerMonetagServiceWorker();
   primeMonetagPlacements();
   attachDropEvents();
