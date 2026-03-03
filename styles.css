@@ -258,35 +258,12 @@ body {
   color: rgba(245, 241, 231, 0.8);
 }
 
-.ad-strip {
-  padding: 0 2.15rem 1rem;
-}
-
-.ad-strip-inner {
-  max-width: 920px;
-  margin-left: clamp(88px, 11vw, 212px);
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.ad-slot {
-  min-height: 92px;
-  border: 1px dashed rgba(245, 241, 231, 0.2);
-  border-radius: 16px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
-    rgba(34, 47, 61, 0.44);
-}
-
-.ad-slot:empty::before {
-  content: "Sponsored";
-  display: block;
-  padding: 0.85rem 1rem;
-  color: rgba(245, 241, 231, 0.42);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.ad-mounts {
+  position: fixed;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .progress-overlay {
@@ -432,14 +409,6 @@ body {
     width: 100%;
   }
 
-  .ad-strip {
-    padding: 0 1rem 1rem;
-  }
-
-  .ad-strip-inner {
-    margin-left: 0;
-    grid-template-columns: 1fr;
-  }
 }
 
 .panel-no-poster {

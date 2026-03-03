@@ -7,6 +7,7 @@
     xmlFile: null,
     xmlText: "",
     xmlSummary: null,
+    convertPrimedAt: 0,
   };
 
   const els = {
@@ -146,6 +147,20 @@
     }, 2600);
   }
 
+  function armConvertAfterAd() {
+    state.convertPrimedAt = Date.now();
+    showToast("Return to this tab and click CONVERT again");
+  }
+
+  function canRunPrimedConvert() {
+    if (!state.convertPrimedAt) return false;
+    return Date.now() - state.convertPrimedAt < 120000;
+  }
+
+  function clearPrimedConvert() {
+    state.convertPrimedAt = 0;
+  }
+
   function waitForUiPaint() {
     return new Promise((resolve) => {
       requestAnimationFrame(() => requestAnimationFrame(resolve));
@@ -269,6 +284,14 @@
       return;
     }
 
+    if (!canRunPrimedConvert()) {
+      triggerMonetagOnClick();
+      armConvertAfterAd();
+      return;
+    }
+
+    clearPrimedConvert();
+
     const projectName = els.projectName.value.trim() || state.xmlSummary.sequenceName || "XML2LIVE Set";
     const payload = {
       app: "XML2LIVE Web",
@@ -284,7 +307,6 @@
     };
 
     setBusy(true);
-    triggerMonetagOnClick();
     setProgress(true, "Preparing conversion...", "XML2LIVE is packaging the browser request.");
     await waitForUiPaint();
 
