@@ -273,8 +273,7 @@
     };
   }
 
-  function updateSequence(summary) {
-    const previousSequenceName = state.xmlSummary && state.xmlSummary.sequenceName;
+  function updateSequence(summary, previousSequenceName) {
     const currentProjectName = els.projectName.value.trim();
     const shouldSyncProjectName =
       !state.projectNameTouched ||
@@ -284,7 +283,7 @@
     els.sequenceName.textContent = summary.sequenceName;
     els.sequenceYear.textContent = summary.year ? `(${summary.year})` : "";
     els.sequenceMeta.textContent = `${summary.audioTrackCount} audio tracks`;
-    els.xmlPath.textContent = summary.sequenceName;
+    els.xmlPath.textContent = state.xmlFile ? basenameOf(state.xmlFile.name) : summary.sequenceName;
     setXmlLoadedState(true);
     if (shouldSyncProjectName) {
       els.projectName.value = summary.sequenceName || "XML2LIVE Set";
@@ -312,10 +311,11 @@
     try {
       const xmlText = await file.text();
       const summary = parseTimelineSummary(xmlText, file.name);
+      const previousSequenceName = state.xmlSummary && state.xmlSummary.sequenceName;
       state.xmlFile = file;
       state.xmlText = xmlText;
       state.xmlSummary = summary;
-      updateSequence(summary);
+      updateSequence(summary, previousSequenceName);
       setStatus(`Parsed ${summary.clipCount} clips across ${summary.audioTrackCount} audio tracks. Ready for web conversion.`);
     } catch (error) {
       setStatus(String(error));
