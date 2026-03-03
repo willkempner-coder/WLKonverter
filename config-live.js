@@ -1,5 +1,5 @@
 window.XML2LIVE_API_URL = "https://xml2live-api-vercel.vercel.app/api/xml2live";
-window.XML2LIVE_API_TOKEN = "wlk_9f2b7c4d1e8a6f3c0b5d2a7e9c4f1b6";
+window.XML2LIVE_API_TOKEN = "";
 window.WLK_MONETAG = {
   enabled: true,
   serviceWorker: {
