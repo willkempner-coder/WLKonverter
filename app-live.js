@@ -27,9 +27,10 @@
     progressOverlay: document.querySelector("#progress-overlay"),
     progressTitle: document.querySelector("#progress-title"),
     progressMessage: document.querySelector("#progress-message"),
-    progressAdShell: document.querySelector("#progress-ad-shell"),
-    progressAdSlot: document.querySelector("#progress-ad-slot"),
     toast: document.querySelector("#toast"),
+    adStrip: document.querySelector("#ad-strip"),
+    pageAdShell: document.querySelector("#page-ad-shell"),
+    pageAdSlot: document.querySelector("#page-ad-slot"),
     monetagInlineAd: document.querySelector("#monetag-inline-ad"),
   };
 
@@ -93,16 +94,18 @@
   }
 
   function updateInlineAdVisibility() {
-    if (!els.progressAdShell || !els.progressAdSlot) return;
-    els.progressAdShell.classList.toggle("has-fill", slotHasLikelyVisibleAd(els.progressAdSlot));
+    if (!els.adStrip || !els.pageAdShell || !els.pageAdSlot) return;
+    const hasFill = slotHasLikelyVisibleAd(els.pageAdSlot);
+    els.pageAdShell.classList.toggle("has-fill", hasFill);
+    els.adStrip.classList.toggle("has-fill", hasFill);
   }
 
   function watchInlineAdFill() {
-    if (!els.progressAdSlot) return;
+    if (!els.pageAdSlot) return;
     updateInlineAdVisibility();
     const observer = new MutationObserver(() => {
-      if (els.monetagInlineAd && els.progressAdSlot && els.monetagInlineAd.firstChild && !els.progressAdSlot.firstChild) {
-        els.progressAdSlot.appendChild(els.monetagInlineAd.firstChild);
+      if (els.monetagInlineAd && els.pageAdSlot && els.monetagInlineAd.firstChild && !els.pageAdSlot.firstChild) {
+        els.pageAdSlot.appendChild(els.monetagInlineAd.firstChild);
       }
       updateInlineAdVisibility();
     });
@@ -111,7 +114,7 @@
       subtree: true,
       characterData: true,
     });
-    observer.observe(els.progressAdSlot, {
+    observer.observe(els.pageAdSlot, {
       childList: true,
       subtree: true,
       characterData: true,
@@ -168,26 +171,20 @@
     }, Number(inlineConfig.showAfterSuccessMs) || 1800);
   }
 
-  function maybeLoadInlineAdDuringProgress() {
-    const inlineConfig = monetagConfig.inline || {};
-    if (!monetagConfig.enabled || inlineConfig.loadAfterSuccess) return;
-    const slot = monetagSlotElement("inline");
-    loadExternalScript(monetagConfig.scripts && monetagConfig.scripts.inline, slot || document.body);
-  }
-
-  function moveInlineAdIntoProgress() {
-    if (!els.monetagInlineAd || !els.progressAdSlot) return;
+  function moveInlineAdIntoPageSlot() {
+    if (!els.monetagInlineAd || !els.pageAdSlot) return;
     while (els.monetagInlineAd.firstChild) {
-      els.progressAdSlot.appendChild(els.monetagInlineAd.firstChild);
+      els.pageAdSlot.appendChild(els.monetagInlineAd.firstChild);
     }
     updateInlineAdVisibility();
   }
 
-  function prepareProgressAd() {
+  function preparePageAd() {
     const inlineConfig = monetagConfig.inline || {};
-    maybeLoadInlineAdDuringProgress();
     window.setTimeout(() => {
-      moveInlineAdIntoProgress();
+      const slot = monetagSlotElement("inline");
+      loadExternalScript(monetagConfig.scripts && monetagConfig.scripts.inline, slot || document.body);
+      moveInlineAdIntoPageSlot();
       updateInlineAdVisibility();
     }, Number(inlineConfig.showAfterSuccessMs) || 1800);
   }
@@ -397,7 +394,6 @@
 
     setBusy(true);
     setProgress(true, "Preparing conversion...", "XML2LIVE is packaging the browser request.");
-    prepareProgressAd();
     await waitForUiPaint();
 
     try {
@@ -405,7 +401,7 @@
         const mode = await postToBackend(payload);
         setStatus(`Backend conversion finished. Downloaded ${mode === "zip" ? "zip" : "response payload"}.`);
         showToast("Conversion complete");
-        maybeLoadInlineAdAfterSuccess();
+        preparePageAd();
         maybeShowMonetagOverlay();
       } catch (error) {
         downloadBlob(

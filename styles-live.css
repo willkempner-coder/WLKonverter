@@ -243,6 +243,41 @@ body {
   color: rgba(245, 241, 231, 0.8);
 }
 
+.ad-strip {
+  display: none;
+  padding: 0 2.15rem 1rem;
+}
+
+.ad-strip.has-fill {
+  display: block;
+}
+
+.ad-strip-inner {
+  max-width: 920px;
+  margin-left: clamp(88px, 11vw, 212px);
+}
+
+.page-ad-shell {
+  display: none;
+}
+
+.page-ad-shell.has-fill {
+  display: block;
+}
+
+.page-ad-label {
+  margin-bottom: 0.55rem;
+  color: rgba(245, 241, 231, 0.5);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-ad-slot {
+  min-height: 0;
+  overflow: hidden;
+}
+
 .ad-mounts {
   position: fixed;
   width: 0;
@@ -345,30 +380,6 @@ body {
   color: rgba(245, 241, 231, 0.78);
 }
 
-.progress-ad-shell {
-  display: none;
-  margin-top: 1rem;
-  padding-top: 0.85rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.progress-ad-shell.has-fill {
-  display: block;
-}
-
-.progress-ad-label {
-  margin-bottom: 0.55rem;
-  color: rgba(245, 241, 231, 0.5);
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.progress-ad-slot {
-  min-height: 0;
-  overflow: hidden;
-}
-
 .progress-track {
   width: 100%;
   height: 10px;
@@ -443,6 +454,14 @@ body {
 
   .seo-copy {
     padding: 0 1rem 1.2rem;
+  }
+
+  .ad-strip {
+    padding: 0 1rem 1rem;
+  }
+
+  .ad-strip-inner {
+    margin-left: 0;
   }
 
   .seo-inner {
